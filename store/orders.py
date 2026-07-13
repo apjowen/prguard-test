@@ -36,3 +36,12 @@ def customer_total(customer_id: int) -> str:
     orders = db.orders_for_customer(customer_id)
     total_cents = sum(o["total_cents"] for o in orders)
     return format_money(total_cents)
+
+
+def issue_refund(order_id: int) -> None:
+    """Mark an order as refunded."""
+    with db.connection() as conn:
+        conn.execute(
+            "UPDATE orders SET status = ? WHERE id = ?", ("refunded", order_id)
+        )
+

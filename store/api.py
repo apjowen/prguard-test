@@ -35,9 +35,8 @@ def show_order(order_id: int):
     summary = orders.order_summary(order_id)
     if summary is None:
         return jsonify({"error": "not found"}), 404
-    if summary["customer_id"] != customer_id:
-        return jsonify({"error": "forbidden"}), 403
     return jsonify(summary)
+
 
 
 @app.get("/customers/me/total")

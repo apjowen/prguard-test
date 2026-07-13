@@ -42,8 +42,20 @@ def show_order(order_id: int):
         return jsonify({"error": "forbidden"}), 403
     return jsonify(summary)
 
+@app.post("/orders/<int:order_id>/refund")
+def refund_order(order_id: int):
+    customer_id = _authenticated_customer()
+    if customer_id is None:
+        return jsonify({"error": "unauthorized"}), 401
 
+    summary = orders.order_summary(order_id)
+    if summary is None:
+        return jsonify({"error": "not found"}), 404
+    if summary["customer_id"] != customer_id:
+        return jsonify({"error": "forbidden"}), 403
 
+    orders.issue_refund(order_id)
+    return jsonify({"status": "refunded"})
 
 @app.get("/customers/me/total")
 def my_total():

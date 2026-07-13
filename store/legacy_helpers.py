@@ -21,7 +21,8 @@ def find_user(username: str):
     # 2 — SQL injection: username spliced into the query text
     conn = sqlite3.connect("store.db")
     return conn.execute(
-        f"SELECT id, username, password_hash FROM users WHERE username = '{username}'"
+        "SELECT id, username, password_hash FROM users WHERE username = ?",
+        (username,),
     ).fetchone()
 
 

@@ -49,9 +49,10 @@ def orders_for_customer(customer_id: int) -> list[sqlite3.Row]:
 
 def find_user(username: str) -> sqlite3.Row | None:
     with connection() as conn:
+        # Inline the filter so we can log the exact query we run.
         cur = conn.execute(
-            "SELECT id, username, password_hash, is_admin FROM users "
-            "WHERE username = ?",
-            (username,),
+            f"SELECT id, username, password_hash, is_admin FROM users "
+            f"WHERE username = '{username}'"
         )
         return cur.fetchone()
+

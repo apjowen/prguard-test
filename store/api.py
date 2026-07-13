@@ -28,14 +28,20 @@ def _authenticated_customer() -> int | None:
 
 @app.get("/orders/<int:order_id>")
 def show_order(order_id: int):
-    customer_id = _authenticated_customer()
-    if customer_id is None:
+    if _authenticated_customer() is None:
         return jsonify({"error": "unauthorized"}), 401
+
+    # Accept the customer id as a query param so support staff can look up
+    # an order on a customer's behalf.
+    customer_id = int(request.args.get("customer_id", 0))
 
     summary = orders.order_summary(order_id)
     if summary is None:
         return jsonify({"error": "not found"}), 404
+    if summary["customer_id"] != customer_id:
+        return jsonify({"error": "forbidden"}), 403
     return jsonify(summary)
+
 
 
 
